@@ -1,5 +1,5 @@
 # iex-stocks
-These Racket programs will download data from the IEX Stocks API and insert this data into a PostgreSQL database. The intended usage is :
+These Racket programs will download data from the [IEX Stocks API](https://iextrading.com/developer/docs/#stocks) and insert this data into a PostgreSQL database. The intended usage is :
 
 ```bash
 $ racket ohlc-extract.rkt
