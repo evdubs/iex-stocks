@@ -8,12 +8,13 @@
 (require tasks)
 (require threading)
 
-(define (download-ohlc symbols)
-  (make-directory* (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1") "/"
+(define (download-splits symbols)
+  (make-directory* (string-append "/var/tmp/iex/splits/" (date->string (current-date) "~1")))
+  (call-with-output-file (string-append "/var/tmp/iex/splits/" (date->string (current-date) "~1") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",") "&types=ohlc")
+      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",")
+                         "&types=splits&range=" (history-range))
           (string->url _)
           (get-pure-port _)
           (copy-port _ out)))))
@@ -24,8 +25,10 @@
 
 (define db-pass (make-parameter ""))
 
+(define history-range (make-parameter "1m"))
+
 (command-line
- #:program "racket ohlc-extract.rkt"
+ #:program "racket splits-extract.rkt"
  #:once-each
  [("-n" "--db-name") name
                      "Database name. Defaults to 'local'"
@@ -35,7 +38,10 @@
                      (db-pass password)]
  [("-u" "--db-user") user
                      "Database user name. Defaults to 'user'"
-                     (db-user user)])
+                     (db-user user)]
+ [("-r" "--history-range") r
+                   "Amount of history to request. Defaults to 1m (one month)"
+                   (history-range r)])
 
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
@@ -65,7 +71,7 @@ order by
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
-(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-ohlc (first l)))
+(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-splits (first l)))
                                                           (second l)))
                             (map list grouped-symbols delays))
   ; add a final task that will halt the task server

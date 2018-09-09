@@ -8,12 +8,12 @@
 (require tasks)
 (require threading)
 
-(define (download-ohlc symbols)
-  (make-directory* (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1") "/"
+(define (download-volume symbols)
+  (make-directory* (string-append "/var/tmp/iex/volume/" (date->string (current-date) "~1")))
+  (call-with-output-file (string-append "/var/tmp/iex/volume/" (date->string (current-date) "~1") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",") "&types=ohlc")
+      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",") "&types=volume-by-venue")
           (string->url _)
           (get-pure-port _)
           (copy-port _ out)))))
@@ -25,7 +25,7 @@
 (define db-pass (make-parameter ""))
 
 (command-line
- #:program "racket ohlc-extract.rkt"
+ #:program "racket volume-extract.rkt"
  #:once-each
  [("-n" "--db-name") name
                      "Database name. Defaults to 'local'"
@@ -65,7 +65,7 @@ order by
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
-(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-ohlc (first l)))
+(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-volume (first l)))
                                                           (second l)))
                             (map list grouped-symbols delays))
   ; add a final task that will halt the task server
