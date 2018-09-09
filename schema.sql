@@ -11,7 +11,7 @@ CREATE TYPE iex.dividend_flag AS ENUM
     'Year end',
     'Unknown rate',
     'Regular dividend is suspended');
-    
+
 CREATE TYPE iex.dividend_qualified AS ENUM
    ('Partially qualified income',
     'Qualified income',
@@ -25,7 +25,7 @@ CREATE TYPE iex.dividend_type AS ENUM
     'Medium term capital gain',
     'Long term capital gain',
     'Unspecified term capital gain');
-    
+
 CREATE TYPE iex.issue_type AS ENUM
    ('American depositary receipt',
     'Real estate investment trust',
@@ -50,7 +50,7 @@ CREATE TYPE iex.venue AS ENUM
     'XNGS',
     'XNYS',
     'XPHL');
-    
+
 CREATE TABLE iex.company
 (
     act_symbol text COLLATE pg_catalog."default" NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE iex.company
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-    
+
 CREATE TABLE iex.dividend
 (
     act_symbol text COLLATE pg_catalog."default" NOT NULL,
