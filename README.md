@@ -21,5 +21,4 @@ $ racket dividends-extract.rkt
 $ racket dividends-transform-load.rkt
 ```
 
-
 The provided schema.sql file shows the expected schema within the target PostgreSQL instance. This process assumes that you can write to a /var/tmp/iex folder. This process also assumes that you have loaded your database with NASDAQ symbol file information. This data is provided by the [nasdaq-symbols](https://github.com/evdubs/nasdaq-symbols) project.
