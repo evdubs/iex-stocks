@@ -1,10 +1,13 @@
-#lang racket
+#lang racket/base
 
-(require db)
-(require json)
-(require racket/cmdline)
-(require srfi/19) ; Time Data Types and Procedures
-(require threading)
+(require db
+         json
+         racket/cmdline
+         racket/port
+         racket/sequence
+         racket/string
+         srfi/19 ; Time Data Types and Procedures
+         threading)
 
 (struct split (ex-date declared-date record-date payment-date to-factor for-factor))
 

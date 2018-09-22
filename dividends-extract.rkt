@@ -1,12 +1,16 @@
-#lang racket
+#lang racket/base
 
-(require db)
-(require "list-partition.rkt")
-(require net/url)
-(require racket/cmdline)
-(require srfi/19) ; Time Data Types and Procedures
-(require tasks)
-(require threading)
+(require db
+         net/url
+         racket/cmdline
+         racket/file
+         racket/list
+         racket/port
+         racket/string
+         srfi/19 ; Time Data Types and Procedures
+         tasks
+         threading
+         "list-partition.rkt")
 
 (define (download-dividends symbols)
   (make-directory* (string-append "/var/tmp/iex/dividends/" (date->string (current-date) "~1")))
