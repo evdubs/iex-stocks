@@ -57,16 +57,14 @@ CREATE TABLE iex.company
     company_name text,
     exchange text,
     industry text,
+    sub_industry text,
     website text,
     description text,
     ceo text,
     issue_type iex.issue_type,
     sector text,
-    CONSTRAINT company_pkey PRIMARY KEY (act_symbol),
-    CONSTRAINT company_act_symbol_pkey FOREIGN KEY (act_symbol)
-        REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    last_seen date,
+    CONSTRAINT company_pkey PRIMARY KEY (act_symbol)
 );
 
 CREATE TABLE iex.dividend
