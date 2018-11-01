@@ -103,7 +103,7 @@ insert into iex.company (
     when '' then NULL
     else $8
   end,
-  (select issue_type from is),
+  (select issue_type from it),
   case $10
     when '' then NULL
     else $10
