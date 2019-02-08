@@ -79,7 +79,7 @@ CREATE TABLE iex.dividend
     type iex.dividend_type,
     qualified iex.dividend_qualified,
     CONSTRAINT dividend_pkey PRIMARY KEY (act_symbol, ex_date),
-    CONSTRAINT dividend_act_symbol_pkey FOREIGN KEY (act_symbol)
+    CONSTRAINT dividend_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -94,7 +94,7 @@ CREATE TABLE iex.ohlc
     low numeric,
     close numeric,
     CONSTRAINT ohlc_pkey PRIMARY KEY (act_symbol, date),
-    CONSTRAINT ohlc_act_symbol_pkey FOREIGN KEY (act_symbol)
+    CONSTRAINT ohlc_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -110,7 +110,7 @@ CREATE TABLE iex.split
     to_factor numeric NOT NULL,
     for_factor numeric NOT NULL,
     CONSTRAINT split_pkey PRIMARY KEY (act_symbol, ex_date),
-    CONSTRAINT split_act_symbol_pkey FOREIGN KEY (act_symbol)
+    CONSTRAINT split_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -123,7 +123,7 @@ CREATE TABLE iex.volume
     venue iex.venue NOT NULL,
     volume bigint NOT NULL,
     CONSTRAINT volume_pkey PRIMARY KEY (act_symbol, date, venue),
-    CONSTRAINT volume_act_symbol_pkey FOREIGN KEY (act_symbol)
+    CONSTRAINT volume_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
