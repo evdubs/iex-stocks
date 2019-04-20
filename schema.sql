@@ -53,7 +53,7 @@ CREATE TYPE iex.venue AS ENUM
 
 CREATE TABLE iex.company
 (
-    act_symbol text COLLATE pg_catalog."default" NOT NULL,
+    act_symbol text NOT NULL,
     company_name text,
     exchange text,
     industry text,
@@ -69,7 +69,7 @@ CREATE TABLE iex.company
 
 CREATE TABLE iex.dividend
 (
-    act_symbol text COLLATE pg_catalog."default" NOT NULL,
+    act_symbol text NOT NULL,
     ex_date date NOT NULL,
     payment_date date NOT NULL,
     record_date date NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE iex.dividend
 
 CREATE TABLE iex.ohlc
 (
-    act_symbol text COLLATE pg_catalog."default" NOT NULL,
+    act_symbol text NOT NULL,
     date date NOT NULL,
     open numeric,
     high numeric,
@@ -102,7 +102,7 @@ CREATE TABLE iex.ohlc
 
 CREATE TABLE iex.split
 (
-    act_symbol text COLLATE pg_catalog."default" NOT NULL,
+    act_symbol text NOT NULL,
     ex_date date NOT NULL,
     payment_date date,
     record_date date,
@@ -118,7 +118,7 @@ CREATE TABLE iex.split
 
 CREATE TABLE iex.volume
 (
-    act_symbol text COLLATE pg_catalog."default" NOT NULL,
+    act_symbol text NOT NULL,
     date date NOT NULL,
     venue iex.venue NOT NULL,
     volume bigint NOT NULL,
