@@ -20,7 +20,8 @@
       (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",") "&types=ohlc")
           (string->url _)
           (get-pure-port _)
-          (copy-port _ out)))))
+          (copy-port _ out)))
+    #:exists 'replace))
 
 (define db-user (make-parameter "user"))
 

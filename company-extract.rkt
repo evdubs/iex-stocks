@@ -30,7 +30,8 @@
                          "&types=company")
           (string->url _)
           (get-pure-port _)
-          (copy-port _ out)))))
+          (copy-port _ out)))
+    #:exists 'replace))
 
 (define grouped-symbols (list-partition (download-symbols) 100 100))
 
