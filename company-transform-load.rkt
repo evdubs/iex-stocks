@@ -57,7 +57,8 @@
             (~> (port->string in)
                 (string->jsexpr _)
                 (hash-for-each _ (λ (symbol company-hash)
-                                   (query-exec dbc "
+                                   (cond [(not (equal? 'null (hash-ref (hash-ref company-hash 'company) 'companyName)))
+                                          (query-exec dbc "
 with it as (
   select case $9
     when 'ad' then 'American depositary receipt'::iex.issue_type
@@ -112,21 +113,21 @@ insert into iex.company (
 ) on conflict (act_symbol) do update set
   last_seen = $11::text::date;
 "
-                                               (hash-ref (hash-ref company-hash 'company) 'symbol)
-                                               (hash-ref (hash-ref company-hash 'company) 'companyName)
-                                               (hash-ref (hash-ref company-hash 'company) 'exchange)
-                                               (hash-ref (hash-ref company-hash 'company) 'industry)
-                                               (~> (hash-ref (hash-ref company-hash 'company) 'tags)
-                                                   (remove (hash-ref (hash-ref company-hash 'company) 'sector) _)
-                                                   (remove (hash-ref (hash-ref company-hash 'company) 'industry) _)
-                                                   (append _ (list ""))
-                                                   (first _))
-                                               (hash-ref (hash-ref company-hash 'company) 'website)
-                                               (hash-ref (hash-ref company-hash 'company) 'description)
-                                               (hash-ref (hash-ref company-hash 'company) 'CEO)
-                                               (hash-ref (hash-ref company-hash 'company) 'issueType)
-                                               (hash-ref (hash-ref company-hash 'company) 'sector)
-                                               (date->string (folder-date) "~1")))))
+                                                      (hash-ref (hash-ref company-hash 'company) 'symbol)
+                                                      (hash-ref (hash-ref company-hash 'company) 'companyName)
+                                                      (hash-ref (hash-ref company-hash 'company) 'exchange)
+                                                      (hash-ref (hash-ref company-hash 'company) 'industry)
+                                                      (~> (hash-ref (hash-ref company-hash 'company) 'tags)
+                                                          (remove (hash-ref (hash-ref company-hash 'company) 'sector) _)
+                                                          (remove (hash-ref (hash-ref company-hash 'company) 'industry) _)
+                                                          (append _ (list ""))
+                                                          (first _))
+                                                      (hash-ref (hash-ref company-hash 'company) 'website)
+                                                      (hash-ref (hash-ref company-hash 'company) 'description)
+                                                      (hash-ref (hash-ref company-hash 'company) 'CEO)
+                                                      (hash-ref (hash-ref company-hash 'company) 'issueType)
+                                                      (hash-ref (hash-ref company-hash 'company) 'sector)
+                                                      (date->string (folder-date) "~1"))]))))
             (commit-transaction dbc)))))))
 
 (disconnect dbc)

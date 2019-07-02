@@ -17,7 +17,7 @@
   (call-with-output-file (string-append "/var/tmp/iex/splits/" (date->string (current-date) "~1") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://cloud.iexapis.com/beta/stock/market/batch?symbols=" (string-join symbols ",")
+      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                          "&types=splits&range=" (history-range) "&token=" (api-token))
           (string->url _)
           (get-pure-port _)

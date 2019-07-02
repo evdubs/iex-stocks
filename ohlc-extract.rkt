@@ -17,11 +17,14 @@
   (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",") "&types=ohlc")
+      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+                         "&types=ohlc&token=" (api-token))
           (string->url _)
           (get-pure-port _)
           (copy-port _ out)))
     #:exists 'replace))
+
+(define api-token (make-parameter ""))
 
 (define db-user (make-parameter "user"))
 
@@ -38,6 +41,9 @@
  [("-p" "--db-pass") password
                      "Database password"
                      (db-pass password)]
+ [("-t" "--api-token") token
+                     "IEX Cloud API Token"
+                     (api-token token)]
  [("-u" "--db-user") user
                      "Database user name. Defaults to 'user'"
                      (db-user user)])

@@ -2,6 +2,7 @@
 
 (require json
          net/url
+         racket/cmdline
          racket/file
          racket/list
          racket/port
@@ -14,7 +15,8 @@
 (define issue-types '("ad" "re" "ce" "si" "lp" "cs" "et"))
 
 (define (download-symbols)
-  (~> (string->url "https://api.iextrading.com/1.0/ref-data/symbols")
+  (~> (string-append "https://cloud.iexapis.com/stable/ref-data/symbols?token=" (api-token))
+      (string->url _)
       (get-pure-port _)
       (port->string _)
       (string->jsexpr _)
@@ -26,12 +28,21 @@
   (call-with-output-file (string-append "/var/tmp/iex/company/" (date->string (current-date) "~1") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://api.iextrading.com/1.0/stock/market/batch?symbols=" (string-join symbols ",")
-                         "&types=company")
+      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+                         "&types=company&token=" (api-token))
           (string->url _)
           (get-pure-port _)
           (copy-port _ out)))
     #:exists 'replace))
+
+(define api-token (make-parameter ""))
+
+(command-line
+ #:program "racket company-extract.rkt"
+ #:once-each
+ [("-t" "--api-token") token
+                     "IEX Cloud API Token"
+                     (api-token token)])
 
 (define grouped-symbols (list-partition (download-symbols) 100 100))
 
