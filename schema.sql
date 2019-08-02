@@ -51,6 +51,22 @@ CREATE TYPE iex.venue AS ENUM
     'XNYS',
     'XPHL');
 
+CREATE TABLE iex.chart
+(
+    act_symbol text NOT NULL,
+    date date NOT NULL,
+    open numeric,
+    high numeric,
+    low numeric,
+    close numeric,
+    volume bigint,
+    CONSTRAINT chart_pkey PRIMARY KEY (act_symbol, date),
+    CONSTRAINT chart_act_symbol_fkey FOREIGN KEY (act_symbol)
+        REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
 CREATE TABLE iex.company
 (
     act_symbol text NOT NULL,
@@ -85,21 +101,6 @@ CREATE TABLE iex.dividend
         ON DELETE NO ACTION
 );
 
-CREATE TABLE iex.ohlc
-(
-    act_symbol text NOT NULL,
-    date date NOT NULL,
-    open numeric,
-    high numeric,
-    low numeric,
-    close numeric,
-    CONSTRAINT ohlc_pkey PRIMARY KEY (act_symbol, date),
-    CONSTRAINT ohlc_act_symbol_fkey FOREIGN KEY (act_symbol)
-        REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
 CREATE TABLE iex.split
 (
     act_symbol text NOT NULL,
@@ -111,19 +112,6 @@ CREATE TABLE iex.split
     for_factor numeric NOT NULL,
     CONSTRAINT split_pkey PRIMARY KEY (act_symbol, ex_date),
     CONSTRAINT split_act_symbol_fkey FOREIGN KEY (act_symbol)
-        REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-);
-
-CREATE TABLE iex.volume
-(
-    act_symbol text NOT NULL,
-    date date NOT NULL,
-    venue iex.venue NOT NULL,
-    volume bigint NOT NULL,
-    CONSTRAINT volume_pkey PRIMARY KEY (act_symbol, date, venue),
-    CONSTRAINT volume_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
