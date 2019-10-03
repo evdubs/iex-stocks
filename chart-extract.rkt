@@ -87,7 +87,7 @@ order by
 
 (define grouped-symbols (list-partition symbols 100 100))
 
-(define delay-interval 10)
+(define delay-interval 5)
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
