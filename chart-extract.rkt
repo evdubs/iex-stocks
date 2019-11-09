@@ -1,26 +1,26 @@
 #lang racket/base
 
 (require db
+         gregor
          net/url
          racket/cmdline
          racket/file
          racket/list
          racket/port
          racket/string
-         srfi/19 ; Time Data Types and Procedures
          tasks
          threading
          "list-partition.rkt")
 
 (define (download-chart symbols)
-  (make-directory* (string-append "/var/tmp/iex/chart/" (date->string (exact-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/chart/" (date->string (exact-date) "~1") "/"
+  (make-directory* (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd")))
+  (call-with-output-file (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                          "&types=chart&range="
                          (cond [(equal? "date" (history-range))
-                                (string-append (history-range) "&exactDate=" (date->string (exact-date) "~Y~m~d")
+                                (string-append (history-range) "&exactDate=" (~t (exact-date) "yyyyMMdd")
                                                "&chartByDay=true")]
                                [else (history-range)])
                          "&token=" (api-token))
@@ -31,7 +31,7 @@
 
 (define api-token (make-parameter ""))
 
-(define exact-date (make-parameter (current-date)))
+(define exact-date (make-parameter (today)))
 
 (define db-user (make-parameter "user"))
 
@@ -46,7 +46,7 @@
  #:once-each
  [("-d" "--date") date
                   "Exact date to query. Enabled only when querying for --history-range date"
-                  (exact-date (string->date date "~Y-~m-~d"))]
+                  (exact-date (iso8601->date date))]
  [("-n" "--db-name") name
                      "Database name. Defaults to 'local'"
                      (db-name name)]
