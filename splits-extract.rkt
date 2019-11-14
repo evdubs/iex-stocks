@@ -1,20 +1,20 @@
 #lang racket/base
 
 (require db
+         gregor
          net/url
          racket/cmdline
          racket/file
          racket/list
          racket/port
          racket/string
-         srfi/19 ; Time Data Types and Procedures
          tasks
          threading
          "list-partition.rkt")
 
 (define (download-splits symbols)
-  (make-directory* (string-append "/var/tmp/iex/splits/" (date->string (current-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/splits/" (date->string (current-date) "~1") "/"
+  (make-directory* (string-append "/var/tmp/iex/splits/" (~t (today) "yyyy-MM-dd")))
+  (call-with-output-file (string-append "/var/tmp/iex/splits/" (~t (today) "yyyy-MM-dd") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
