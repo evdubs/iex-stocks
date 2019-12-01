@@ -9,7 +9,8 @@
          racket/string
          threading)
 
-(struct split (ex-date declared-date to-factor from-factor))
+(struct split (ex-date declared-date to-factor from-factor)
+  #:transparent)
 
 (define base-folder (make-parameter "/var/tmp/iex/splits"))
 
@@ -78,7 +79,7 @@ insert into iex.split (
 "
                                                                 (symbol->string symbol)
                                                                 (split-ex-date s)
-                                                                (split-declared-date s)
+                                                                (if (equal? 'null (split-declared-date s)) "" (split-declared-date s))
                                                                 (real->decimal-string (split-to-factor s) 6)
                                                                 (real->decimal-string (split-from-factor s) 6)))
                                              (map (λ (e) (apply split
