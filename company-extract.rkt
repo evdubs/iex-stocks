@@ -1,13 +1,13 @@
 #lang racket/base
 
 (require json
+         gregor
          net/url
          racket/cmdline
          racket/file
          racket/list
          racket/port
          racket/string
-         srfi/19 ; Time Data Types and Procedures
          tasks
          threading
          "list-partition.rkt")
@@ -24,8 +24,8 @@
       (map (λ (h) (hash-ref h 'symbol)) _)))
 
 (define (download-company symbols)
-  (make-directory* (string-append "/var/tmp/iex/company/" (date->string (current-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/company/" (date->string (current-date) "~1") "/"
+  (make-directory* (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd")))
+  (call-with-output-file (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
