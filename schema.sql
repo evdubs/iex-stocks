@@ -1,3 +1,5 @@
+CREATE SCHEMA iex;
+
 CREATE TYPE iex.dividend_flag AS ENUM
    ('Final dividend',
     'Liquidation',
