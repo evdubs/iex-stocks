@@ -21,7 +21,7 @@ $ racket company-extract.rkt
 $ racket company-transform-load.rkt
 ```
 
-Many of the above programs require a password. The available parameters are:
+Many of the above programs require a database password. The available parameters are:
 
 ```bash
 $ racket chart-extract.rkt -h
