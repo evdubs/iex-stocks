@@ -62,7 +62,7 @@ CREATE TABLE iex.chart
     low numeric,
     close numeric,
     volume bigint,
-    CONSTRAINT chart_pkey PRIMARY KEY (act_symbol, date),
+    CONSTRAINT chart_pkey PRIMARY KEY (date, act_symbol),
     CONSTRAINT chart_act_symbol_fkey FOREIGN KEY (act_symbol)
         REFERENCES nasdaq.symbol (act_symbol) MATCH SIMPLE
         ON UPDATE NO ACTION
