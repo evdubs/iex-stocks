@@ -41,6 +41,24 @@
 
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
+(define symbol-count (query-value dbc "
+select
+  count(*)
+from
+  nasdaq.symbol
+where
+  is_test_issue = false and
+  is_next_shares = false and
+  nasdaq_symbol !~ '[-\\$\\+\\*#!@%\\^=~]' and
+  case when nasdaq_symbol ~ '[A-Z]{4}[L-Z]'
+    then security_name !~ '(Note|Preferred|Right|Unit|Warrant)'
+    else true
+  end and
+  last_seen = (select max(last_seen) from nasdaq.symbol);
+"))
+
+(define insert-count 0)
+
 (parameterize ([current-directory (string-append (base-folder) "/" (~t (folder-date) "yyyy-MM-dd") "/")])
   (for ([p (sequence-filter (λ (p) (string-contains? (path->string p) ".json")) (in-directory (current-directory)))])
     (let* ([file-name (path->string p)]
@@ -95,10 +113,15 @@ insert into iex.chart (
                                                             (real->decimal-string open 4))
                                                         (if (equal? high 0) (real->decimal-string (max open close) 4)
                                                             (real->decimal-string high 4))
-                                                        (if (equal? low 0) (real->decimal-string (min open close) 4)
+                                                        (if (equal? low 0)
+                                                            (if (equal? open 0) (real->decimal-string close 4)
+                                                                (real->decimal-string (min open close) 4))
                                                             (real->decimal-string low 4))
                                                         (real->decimal-string close 4)
-                                                        (number->string volume)))]))))
+                                                        (number->string volume))
+                                            (set! insert-count (add1 insert-count)))]))))
             (commit-transaction dbc)))))))
+
+(displayln (string-append "Inserted or updated " (number->string insert-count) " rows for " (number->string symbol-count) " symbols"))
 
 (disconnect dbc)
