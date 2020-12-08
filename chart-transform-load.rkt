@@ -82,7 +82,7 @@ where
                                                 [high (hash-ref (first (hash-ref chart-hash 'chart)) 'uHigh)]
                                                 [low (hash-ref (first (hash-ref chart-hash 'chart)) 'uLow)]
                                                 [close (hash-ref (first (hash-ref chart-hash 'chart)) 'uClose)]
-                                                [volume (hash-ref (first (hash-ref chart-hash 'chart)) 'uVolume)])
+                                                [volume (hash-ref (first (hash-ref chart-hash 'chart)) 'uVolume 0)])
                                             (query-exec dbc "
 insert into iex.chart (
   act_symbol,
