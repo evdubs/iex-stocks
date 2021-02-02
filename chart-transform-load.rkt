@@ -76,7 +76,8 @@ where
                 (string->jsexpr _)
                 (hash-for-each _ (λ (symbol chart-hash)
                                    (cond [(and (not (equal? 'null (hash-ref chart-hash 'chart)))
-                                               (not (empty? (hash-ref chart-hash 'chart))))
+                                               (not (empty? (hash-ref chart-hash 'chart)))
+                                               (hash-has-key? (first (hash-ref chart-hash 'chart)) 'uOpen))
                                           (let ([date (hash-ref (first (hash-ref chart-hash 'chart)) 'date)]
                                                 [open (hash-ref (first (hash-ref chart-hash 'chart)) 'uOpen)]
                                                 [high (hash-ref (first (hash-ref chart-hash 'chart)) 'uHigh)]
