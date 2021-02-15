@@ -2,7 +2,7 @@
 
 (require db
          gregor
-         net/url
+         net/http-easy
          racket/cmdline
          racket/file
          racket/list
@@ -19,8 +19,8 @@
     (λ (out)
       (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                          "&types=splits&range=" (history-range) "&token=" (api-token))
-          (string->url _)
-          (get-pure-port _)
+          (get _ #:stream? #t)
+          (response-output _)
           (copy-port _ out)))
     #:exists 'replace))
 

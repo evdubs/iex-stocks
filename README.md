@@ -111,5 +111,5 @@ Unfortunately, around June 2019, the `ohlc` and `volume` endpoints have been mad
 It is recommended that you start with the standard Racket distribution. With that, you will need to install the following packages:
 
 ```bash
-$ raco pkg install --skip-installed gregor tasks threading
+$ raco pkg install --skip-installed gregor http-easy tasks threading
 ```

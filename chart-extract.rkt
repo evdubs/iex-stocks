@@ -2,7 +2,7 @@
 
 (require db
          gregor
-         net/url
+         net/http-easy
          racket/cmdline
          racket/file
          racket/list
@@ -24,8 +24,8 @@
                                                "&chartByDay=true")]
                                [else (history-range)])
                          "&token=" (api-token))
-          (string->url _)
-          (get-pure-port _)
+          (get _ #:stream? #t)
+          (response-output _)
           (copy-port _ out)))
     #:exists 'replace))
 
