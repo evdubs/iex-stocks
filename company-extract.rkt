@@ -16,8 +16,8 @@
 
 (define (download-symbols)
   (~> (string-append "https://cloud.iexapis.com/stable/ref-data/symbols?token=" (api-token))
-      (string->url _)
-      (get-pure-port _)
+      (get _ #:stream? #t)
+      (response-output _)
       (port->string _)
       (string->jsexpr _)
       (filter (λ (h) (member (hash-ref h 'type) issue-types)) _)
