@@ -17,11 +17,15 @@
   (call-with-output-file (string-append "/var/tmp/iex/splits/" (~t (today) "yyyy-MM-dd") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
-                         "&types=splits&range=" (history-range) "&token=" (api-token))
-          (get _ #:stream? #t)
-          (response-output _)
-          (copy-port _ out)))
+      (with-handlers ([exn:fail?
+                       (λ (error)
+                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
+                         (displayln ((error-value->string-handler) error 1000)))])
+        (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+                           "&types=splits&range=" (history-range) "&token=" (api-token))
+            (get _)
+            (response-body _)
+            (write-bytes _ out))))
     #:exists 'replace))
 
 (define api-token (make-parameter ""))

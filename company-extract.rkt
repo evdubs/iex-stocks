@@ -16,9 +16,9 @@
 
 (define (download-symbols)
   (~> (string-append "https://cloud.iexapis.com/stable/ref-data/symbols?token=" (api-token))
-      (get _ #:stream? #t)
-      (response-output _)
-      (port->string _)
+      (get _)
+      (response-body _)
+      (bytes->string/utf-8 _)
       (string->jsexpr _)
       (filter (λ (h) (member (hash-ref h 'type) issue-types)) _)
       (map (λ (h) (hash-ref h 'symbol)) _)))
@@ -28,11 +28,15 @@
   (call-with-output-file (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd") "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
-                         "&types=company&token=" (api-token))
-          (get _ #:stream? #t)
-          (response-output _)
-          (copy-port _ out)))
+      (with-handlers ([exn:fail?
+                       (λ (error)
+                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
+                         (displayln ((error-value->string-handler) error 1000)))])
+        (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+                           "&types=company&token=" (api-token))
+            (get _)
+            (response-body _)
+            (write-bytes _ out))))
     #:exists 'replace))
 
 (define api-token (make-parameter ""))
