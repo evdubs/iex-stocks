@@ -58,7 +58,7 @@
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
-(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-company (first l)))
+(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (thread (λ () (download-company (first l)))))
                                                           (second l)))
                             (map list grouped-symbols delays))
   ; add a final task that will halt the task server
