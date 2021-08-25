@@ -1,27 +1,31 @@
 #lang racket/base
 
 (require db
-         net/url
+         gregor
+         net/http-easy
          racket/cmdline
          racket/file
          racket/list
          racket/port
          racket/string
-         srfi/19 ; Time Data Types and Procedures
          tasks
          threading
          "list-partition.rkt")
 
 (define (download-ohlc symbols)
-  (make-directory* (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1")))
-  (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->string (current-date) "~1") "/"
+  (make-directory* (string-append "/var/tmp/iex/ohlc/" (date->iso8601 (today))))
+  (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->iso8601 (today)) "/"
                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
-      (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
-                         "&types=ohlc&token=" (api-token))
-          (string->url _)
-          (get-pure-port _)
-          (copy-port _ out)))
+      (with-handlers ([exn:fail?
+                       (λ (error)
+                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
+                         (displayln ((error-value->string-handler) error 1000)))])
+        (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+                           "&types=ohlc&token=" (api-token))
+            (get _)
+            (response-body _)
+            (write-bytes _ out))))
     #:exists 'replace))
 
 (define api-token (make-parameter ""))
@@ -76,7 +80,7 @@ order by
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
-(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (download-ohlc (first l)))
+(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (thread (λ () (download-ohlc (first l)))))
                                                           (second l)))
                             (map list grouped-symbols delays))
   ; add a final task that will halt the task server
