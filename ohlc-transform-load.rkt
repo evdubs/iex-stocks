@@ -57,10 +57,10 @@
             (~> (port->string in)
                 (string->jsexpr _)
                 (hash-for-each _ (λ (symbol ohlc-hash)
-                                   (let* ([open (hash-ref (hash-ref ohlc-hash 'ohlc) 'open)]
-                                          [high (hash-ref (hash-ref ohlc-hash 'ohlc) 'high)]
-                                          [low (hash-ref (hash-ref ohlc-hash 'ohlc) 'low)]
-                                          [close (hash-ref (hash-ref ohlc-hash 'ohlc) 'close)])
+                                   (let ([open (hash-ref (hash-ref ohlc-hash 'ohlc) 'open)]
+                                         [high (hash-ref (hash-ref ohlc-hash 'ohlc) 'high)]
+                                         [low (hash-ref (hash-ref ohlc-hash 'ohlc) 'low)]
+                                         [close (hash-ref (hash-ref ohlc-hash 'ohlc) 'close)])
                                      (cond [(and (not (hash-empty? close))
                                                  (date=? (folder-date) (->date (+period (datetime 1970) (period [milliseconds (hash-ref close 'time)])))))
                                             (query-exec dbc "
