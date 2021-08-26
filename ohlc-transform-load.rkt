@@ -60,10 +60,9 @@
                                    (let* ([open (hash-ref (hash-ref ohlc-hash 'ohlc) 'open)]
                                           [high (hash-ref (hash-ref ohlc-hash 'ohlc) 'high)]
                                           [low (hash-ref (hash-ref ohlc-hash 'ohlc) 'low)]
-                                          [close (hash-ref (hash-ref ohlc-hash 'ohlc) 'close)]
-                                          [close-unix-millis (hash-ref (hash-ref (hash-ref ohlc-hash) 'close) 'time)]
-                                          [close-date (->date (+period (datetime 1970) (period [milliseconds close-unix-millis])))])
-                                     (cond [(date=? (folder-date) close-date)
+                                          [close (hash-ref (hash-ref ohlc-hash 'ohlc) 'close)])
+                                     (cond [(and (not (hash-empty? close))
+                                                 (date=? (folder-date) (->date (+period (datetime 1970) (period [milliseconds (hash-ref close 'time)])))))
                                             (query-exec dbc "
 insert into iex.chart (
   act_symbol,
@@ -94,7 +93,7 @@ insert into iex.chart (
 ) on conflict (act_symbol, date) do nothing;
 "
                                                         (symbol->string symbol)
-                                                        (date->iso8601 close-date)
+                                                        (date->iso8601 (->date (+period (datetime 1970) (period [milliseconds (hash-ref close 'time)]))))
                                                         (if (hash-empty? open) "" (real->decimal-string (hash-ref open 'price) 4))
                                                         (if (equal? high 'null) "" (real->decimal-string high 4))
                                                         (if (equal? low 'null) "" (real->decimal-string low 4))
