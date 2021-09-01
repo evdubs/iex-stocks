@@ -19,7 +19,7 @@
     (λ (out)
       (with-handlers ([exn:fail?
                        (λ (error)
-                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
+                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols) " for date " (date->iso8601 (exact-date))))
                          (displayln ((error-value->string-handler) error 1000)))])
         (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                            "&types=chart&range="
@@ -76,6 +76,12 @@
  [("-r" "--history-range") r
                    "Amount of history to request. Defaults to date, with date paired with a specified date using --date (-d)"
                    (history-range r)])
+
+(cond [(and (equal? "date" (history-range))
+            (or (= 0 (->wday (exact-date)))
+                (= 6 (->wday (exact-date)))))
+       (displayln (string-append "Requested date " (date->iso8601 (exact-date)) " falls on a weekend. Terminating."))
+       (exit)])
 
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
