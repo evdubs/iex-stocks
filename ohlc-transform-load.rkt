@@ -41,6 +41,24 @@
 
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
+(define symbol-count (query-value dbc "
+select
+  count(*)
+from
+  nasdaq.symbol
+where
+  is_test_issue = false and
+  is_next_shares = false and
+  nasdaq_symbol !~ '[-\\$\\+\\*#!@%\\^=~]' and
+  case when nasdaq_symbol ~ '[A-Z]{4}[L-Z]'
+    then security_name !~ '(Note|Preferred|Right|Unit|Warrant)'
+    else true
+  end and
+  last_seen = (select max(last_seen) from nasdaq.symbol);
+"))
+
+(define insert-count 0)
+
 (parameterize ([current-directory (string-append (base-folder) "/" (date->iso8601 (folder-date)) "/")])
   (for ([p (sequence-filter (λ (p) (string-contains? (path->string p) ".json")) (in-directory))])
     (let ([file-name (string-append (base-folder) "/" (date->iso8601 (folder-date)) "/" (path->string p))]
@@ -62,7 +80,9 @@
                                          [low (hash-ref (hash-ref ohlc-hash 'ohlc) 'low)]
                                          [close (hash-ref (hash-ref ohlc-hash 'ohlc) 'close)])
                                      (cond [(and (not (hash-empty? close))
-                                                 (date=? (folder-date) (->date (+period (datetime 1970) (period [milliseconds (hash-ref close 'time)])))))
+                                                 (date=? (folder-date) (->date (+period (datetime 1970) (period [milliseconds (hash-ref close 'time)]))))
+                                                 (not (hash-empty? open))
+                                                 (date=? (folder-date) (->date (+period (datetime 1970) (period [milliseconds (hash-ref open 'time)])))))
                                             (query-exec dbc "
 insert into iex.chart (
   act_symbol,
@@ -97,7 +117,10 @@ insert into iex.chart (
                                                         (if (hash-empty? open) "" (real->decimal-string (hash-ref open 'price) 4))
                                                         (if (equal? high 'null) "" (real->decimal-string high 4))
                                                         (if (equal? low 'null) "" (real->decimal-string low 4))
-                                                        (if (hash-empty? close) "" (real->decimal-string (hash-ref close 'price) 4)))])))))
+                                                        (if (hash-empty? close) "" (real->decimal-string (hash-ref close 'price) 4)))
+                                            (set! insert-count (add1 insert-count))])))))
             (commit-transaction dbc)))))))
+
+(displayln (string-append "Inserted or updated " (number->string insert-count) " rows for " (number->string symbol-count) " symbols"))
 
 (disconnect dbc)
