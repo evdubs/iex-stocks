@@ -12,17 +12,22 @@
          threading
          "list-partition.rkt")
 
-(define (download-splits symbols)
-  (make-directory* (string-append "/var/tmp/iex/splits/" (~t (today) "yyyy-MM-dd")))
-  (call-with-output-file* (string-append "/var/tmp/iex/splits/" (~t (today) "yyyy-MM-dd") "/"
+(define (download-chart symbols)
+  (make-directory* (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd")))
+  (call-with-output-file* (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd") "/"
                                          (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (with-handlers ([exn:fail?
                        (λ (error)
-                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
+                         (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols) " for date " (date->iso8601 (exact-date))))
                          (displayln ((error-value->string-handler) error 1000)))])
         (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
-                           "&types=splits&range=" (history-range) "&token=" (api-token))
+                           "&types=chart&range="
+                           (cond [(equal? "date" (history-range))
+                                  (string-append (history-range) "&exactDate=" (~t (exact-date) "yyyyMMdd")
+                                                 "&chartByDay=true")]
+                                 [else (history-range)])
+                           "&token=" (api-token))
             (get _)
             (response-body _)
             (write-bytes _ out))))
@@ -30,21 +35,26 @@
 
 (define api-token (make-parameter ""))
 
+(define exact-date (make-parameter (today)))
+
 (define db-user (make-parameter "user"))
 
 (define db-name (make-parameter "local"))
 
 (define db-pass (make-parameter ""))
 
-(define history-range (make-parameter "1m"))
+(define history-range (make-parameter "date"))
 
 (define first-symbol (make-parameter ""))
 
 (define last-symbol (make-parameter ""))
 
 (command-line
- #:program "racket splits-extract.rkt"
+ #:program "racket chart-extract-all-symbols.rkt"
  #:once-each
+ [("-d" "--date") date
+                  "Exact date to query. Enabled only when querying for --history-range date"
+                  (exact-date (iso8601->date date))]
  [("-f" "--first-symbol") first
                           "First symbol to query. Defaults to nothing"
                           (first-symbol first)]
@@ -64,8 +74,14 @@
                      "Database user name. Defaults to 'user'"
                      (db-user user)]
  [("-r" "--history-range") r
-                   "Amount of history to request. Defaults to 1m (one month)"
+                   "Amount of history to request. Defaults to date, with date paired with a specified date using --date (-d)"
                    (history-range r)])
+
+(cond [(and (equal? "date" (history-range))
+            (or (= 0 (->wday (exact-date)))
+                (= 6 (->wday (exact-date)))))
+       (displayln (string-append "Requested date " (date->iso8601 (exact-date)) " falls on a weekend. Terminating."))
+       (exit)])
 
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
@@ -82,7 +98,6 @@ where
     then security_name !~ '(Note|Preferred|Right|Unit|Warrant)'
     else true
   end and
-  last_seen = (select max(last_seen) from nasdaq.symbol) and
   case when $1 != ''
     then act_symbol >= $1
     else true
@@ -105,7 +120,7 @@ order by
 
 (define delays (map (λ (x) (* delay-interval x)) (range 0 (length grouped-symbols))))
 
-(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (thread (λ () (download-splits (first l)))))
+(with-task-server (for-each (λ (l) (schedule-delayed-task (λ () (thread (λ () (download-chart (first l)))))
                                                           (second l)))
                             (map list grouped-symbols delays))
   ; add a final task that will halt the task server

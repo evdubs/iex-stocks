@@ -14,8 +14,8 @@
 
 (define (download-chart symbols)
   (make-directory* (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd")))
-  (call-with-output-file (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd") "/"
-                                        (first symbols) "-" (last symbols) ".json")
+  (call-with-output-file* (string-append "/var/tmp/iex/chart/" (~t (exact-date) "yyyy-MM-dd") "/"
+                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (with-handlers ([exn:fail?
                        (λ (error)

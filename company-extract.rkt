@@ -29,8 +29,8 @@
 
 (define (download-company symbols)
   (make-directory* (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd")))
-  (call-with-output-file (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd") "/"
-                                        (first symbols) "-" (last symbols) ".json")
+  (call-with-output-file* (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd") "/"
+                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (with-handlers ([exn:fail?
                        (λ (error)

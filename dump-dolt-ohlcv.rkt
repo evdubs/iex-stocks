@@ -43,8 +43,8 @@
 (define dbc (postgresql-connect #:user (db-user) #:database (db-name) #:password (db-pass)))
 
 (for-each (λ (date)
-            (define option-chain-file (string-append (base-folder) "/ohlcv-" date ".csv"))
-            (call-with-output-file option-chain-file
+            (define ohlcv-file (string-append (base-folder) "/ohlcv-" date ".csv"))
+            (call-with-output-file* ohlcv-file
               (λ (out)
                 (displayln "date,act_symbol,open,high,low,close,volume" out)
                 (for-each (λ (row)

@@ -44,7 +44,7 @@
 
 (define split-file (string-append (base-folder) "/split-" (end-date) ".csv"))
 
-(call-with-output-file split-file
+(call-with-output-file* split-file
   (λ (out)
     (displayln "act_symbol,ex_date,to_factor,for_factor" out)
     (for-each (λ (row)

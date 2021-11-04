@@ -14,8 +14,8 @@
 
 (define (download-ohlc symbols)
   (make-directory* (string-append "/var/tmp/iex/ohlc/" (date->iso8601 (today))))
-  (call-with-output-file (string-append "/var/tmp/iex/ohlc/" (date->iso8601 (today)) "/"
-                                        (first symbols) "-" (last symbols) ".json")
+  (call-with-output-file* (string-append "/var/tmp/iex/ohlc/" (date->iso8601 (today)) "/"
+                                         (first symbols) "-" (last symbols) ".json")
     (λ (out)
       (with-handlers ([exn:fail?
                        (λ (error)
