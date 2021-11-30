@@ -37,8 +37,8 @@ racket chart-extract.rkt [ <option> ... ]
   -r <r>, --history-range <r> : Amount of history to request. Defaults to date, with date paired with a specified date using --date (-d)
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 
 $ racket chart-transform-load.rkt -h
 racket chart-transform-load.rkt [ <option> ... ]
@@ -50,8 +50,8 @@ racket chart-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 
 $ racket splits-extract.rkt -h
 racket splits-extract.rkt [ <option> ... ]
@@ -63,8 +63,8 @@ racket splits-extract.rkt [ <option> ... ]
   -r <r>, --history-range <r> : Amount of history to request. Defaults to 1m (one month)
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 
 $ racket splits-transform-load.rkt -h
 racket splits-transform-load.rkt [ <option> ... ]
@@ -76,8 +76,8 @@ racket splits-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 
 $ racket company-extract.rkt -h
 racket company-extract.rkt [ <option> ... ]
@@ -85,8 +85,8 @@ racket company-extract.rkt [ <option> ... ]
   -t <token>, --api-token <token> : IEX Cloud API Token
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 
 $ racket company-transform-load.rkt -h
 racket company-transform-load.rkt [ <option> ... ]
@@ -98,8 +98,8 @@ racket company-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'. For
-  example: `-h-' is the same as `-h --'
+ Multiple single-letter switches can be combined after one `-`. For
+  example: `-h-` is the same as `-h --`
 ```
 
 The provided `schema.sql` file shows the expected schema within the target PostgreSQL instance. This process assumes that you can write to a `/var/tmp/iex` folder. This process also assumes that you have loaded your database with NASDAQ symbol file information. This data is provided by the [nasdaq-symbols](https://github.com/evdubs/nasdaq-symbols) project.
