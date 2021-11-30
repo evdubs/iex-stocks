@@ -37,7 +37,7 @@ racket chart-extract.rkt [ <option> ... ]
   -r <r>, --history-range <r> : Amount of history to request. Defaults to date, with date paired with a specified date using --date (-d)
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 
 $ racket chart-transform-load.rkt -h
@@ -50,7 +50,7 @@ racket chart-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 
 $ racket splits-extract.rkt -h
@@ -63,7 +63,7 @@ racket splits-extract.rkt [ <option> ... ]
   -r <r>, --history-range <r> : Amount of history to request. Defaults to 1m (one month)
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 
 $ racket splits-transform-load.rkt -h
@@ -76,7 +76,7 @@ racket splits-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 
 $ racket company-extract.rkt -h
@@ -85,7 +85,7 @@ racket company-extract.rkt [ <option> ... ]
   -t <token>, --api-token <token> : IEX Cloud API Token
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 
 $ racket company-transform-load.rkt -h
@@ -98,7 +98,7 @@ racket company-transform-load.rkt [ <option> ... ]
   -u <user>, --db-user <user> : Database user name. Defaults to 'user'
   --help, -h : Show this help
   -- : Do not treat any remaining argument as a switch (at this level)
- Multiple single-letter switches can be combined after one `-'; for
+ Multiple single-letter switches can be combined after one `-'. For
   example: `-h-' is the same as `-h --'
 ```
 
