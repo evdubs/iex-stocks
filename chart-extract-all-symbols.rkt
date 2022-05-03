@@ -20,7 +20,7 @@
       (with-handlers ([exn:fail?
                        (λ (error)
                          (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols) " for date " (date->iso8601 (exact-date))))
-                         (displayln ((error-value->string-handler) error 1000)))])
+                         (displayln error))])
         (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                            "&types=chart&range="
                            (cond [(equal? "date" (history-range))

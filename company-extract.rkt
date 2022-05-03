@@ -18,7 +18,7 @@
   (with-handlers ([exn:fail?
                    (λ (error)
                      (displayln (string-append "Encountered error while downloading symbols."))
-                     (displayln ((error-value->string-handler) error 1000)))])
+                     (displayln error))])
     (~> (string-append "https://cloud.iexapis.com/stable/ref-data/symbols?token=" (api-token))
         (get _)
         (response-body _)
@@ -35,7 +35,7 @@
       (with-handlers ([exn:fail?
                        (λ (error)
                          (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
-                         (displayln ((error-value->string-handler) error 1000)))])
+                         (displayln error))])
         (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
                            "&types=company&token=" (api-token))
             (get _)

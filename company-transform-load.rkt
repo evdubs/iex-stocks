@@ -51,7 +51,7 @@
                                                                       ticker-range
                                                                       " for date "
                                                                       (~t (folder-date) "yyyy-MM-dd")))
-                                       (displayln ((error-value->string-handler) e 1000))
+                                       (displayln e)
                                        (rollback-transaction dbc))])
             (start-transaction dbc)
             (~> (port->string in)

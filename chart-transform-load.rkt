@@ -65,26 +65,25 @@ where
            [ticker-range (string-replace (string-replace file-name (path->string (current-directory)) "") ".json" "")])
       (call-with-input-file file-name
         (λ (in)
-          (with-handlers ([exn:fail? (λ (e) (displayln (string-append "Failed to process "
-                                                                      ticker-range
-                                                                      " for date "
-                                                                      (~t (folder-date) "yyyy-MM-dd")))
-                                       (displayln ((error-value->string-handler) e 1000))
-                                       (rollback-transaction dbc))])
-            (start-transaction dbc)
+          (with-handlers ([exn:fail? (λ (e) (displayln (string-append "Failed to load " file-name
+                                                                      " for date " (~t (folder-date) "yyyy-MM-dd")))
+                                        (displayln e))])
             (~> (port->string in)
                 (string->jsexpr _)
                 (hash-for-each _ (λ (symbol chart-hash)
-                                   (cond [(and (not (equal? 'null (hash-ref chart-hash 'chart)))
-                                               (not (empty? (hash-ref chart-hash 'chart)))
-                                               (hash-has-key? (first (hash-ref chart-hash 'chart)) 'uOpen))
-                                          (let ([date (hash-ref (first (hash-ref chart-hash 'chart)) 'date)]
-                                                [open (hash-ref (first (hash-ref chart-hash 'chart)) 'uOpen)]
-                                                [high (hash-ref (first (hash-ref chart-hash 'chart)) 'uHigh)]
-                                                [low (hash-ref (first (hash-ref chart-hash 'chart)) 'uLow)]
-                                                [close (hash-ref (first (hash-ref chart-hash 'chart)) 'uClose)]
-                                                [volume (hash-ref (first (hash-ref chart-hash 'chart)) 'uVolume 0)])
-                                            (query-exec dbc "
+                                   (with-handlers ([exn:fail? (λ (e) (displayln (string-append "Failed to process " (symbol->string symbol)
+                                                                                               " for date " (~t (folder-date) "yyyy-MM-dd")))
+                                                                 (displayln e))])
+                                     (cond [(and (not (equal? 'null (hash-ref chart-hash 'chart)))
+                                                 (not (empty? (hash-ref chart-hash 'chart)))
+                                                 (hash-has-key? (first (hash-ref chart-hash 'chart)) 'uOpen))
+                                            (let ([date (hash-ref (first (hash-ref chart-hash 'chart)) 'date)]
+                                                  [open (hash-ref (first (hash-ref chart-hash 'chart)) 'uOpen)]
+                                                  [high (hash-ref (first (hash-ref chart-hash 'chart)) 'uHigh)]
+                                                  [low (hash-ref (first (hash-ref chart-hash 'chart)) 'uLow)]
+                                                  [close (hash-ref (first (hash-ref chart-hash 'chart)) 'uClose)]
+                                                  [volume (hash-ref (first (hash-ref chart-hash 'chart)) 'uVolume 0)])
+                                              (query-exec dbc "
 insert into iex.chart (
   act_symbol,
   date,
@@ -108,21 +107,21 @@ insert into iex.chart (
   close = $6::text::numeric,
   volume = $7::text::numeric;
 "
-                                                        (symbol->string symbol)
-                                                        date
-                                                        (if (equal? open 0) (real->decimal-string close 4)
-                                                            (real->decimal-string open 4))
-                                                        (if (equal? high 0) (real->decimal-string (max open close) 4)
-                                                            (real->decimal-string high 4))
-                                                        (if (equal? low 0)
-                                                            (if (equal? open 0) (real->decimal-string close 4)
-                                                                (real->decimal-string (min open close) 4))
-                                                            (real->decimal-string low 4))
-                                                        (real->decimal-string close 4)
-                                                        (number->string volume))
-                                            (set! insert-count (add1 insert-count)))]))))
-            (commit-transaction dbc)))))))
+                                                          (symbol->string symbol)
+                                                          date
+                                                          (if (equal? open 0) (real->decimal-string close 4)
+                                                              (real->decimal-string open 4))
+                                                          (if (equal? high 0) (real->decimal-string (max open close) 4)
+                                                              (real->decimal-string high 4))
+                                                          (if (equal? low 0)
+                                                              (if (equal? open 0) (real->decimal-string close 4)
+                                                                  (real->decimal-string (min open close) 4))
+                                                              (real->decimal-string low 4))
+                                                          (real->decimal-string close 4)
+                                                          (number->string volume))
+                                              (set! insert-count (add1 insert-count)))])))))))))))
 
-(displayln (string-append "Inserted or updated " (number->string insert-count) " rows for " (number->string symbol-count) " symbols"))
+(displayln (string-append "Inserted or updated " (number->string insert-count) " rows for " (number->string symbol-count)
+                          " symbols on " (date->iso8601 (folder-date))))
 
 (disconnect dbc)
