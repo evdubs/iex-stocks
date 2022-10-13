@@ -119,18 +119,18 @@ CREATE TABLE iex.split
         ON DELETE NO ACTION
 );
 
-CREATE OR REPLACE FUNCTION iex.split_adjusted_chart(arg_act_symbol text, arg_start_date date, arg_end_date date)
+CREATE OR REPLACE FUNCTION iex.split_adjusted_chart(arg_act_symbol text, arg_start_date date, arg_end_date date, forward boolean)
  RETURNS TABLE(act_symbol text, date date, open numeric, high numeric, low numeric, close numeric, volume numeric)
  LANGUAGE sql
 AS $function$
 select
   act_symbol,
   date,
-  trunc(open / mul(split_ratio), 4) as open,
-  trunc(high / mul(split_ratio), 4) as high,
-  trunc(low / mul(split_ratio), 4) as low,
-  trunc(close / mul(split_ratio), 4) as close,
-  trunc(volume * mul(split_ratio), 4) as volume
+  trunc(open * mul(split_ratio), 4) as open,
+  trunc(high * mul(split_ratio), 4) as high,
+  trunc(low * mul(split_ratio), 4) as low,
+  trunc(close * mul(split_ratio), 4) as close,
+  trunc(volume / mul(split_ratio), 4) as volume
 from
   (select
     c.act_symbol,
@@ -151,7 +151,10 @@ from
       when c.volume is null then 0
       else c.volume
     end as volume,
-    s.split_ratio
+    case
+      when forward then s.split_ratio
+      else 1 / s.split_ratio
+    end as split_ratio
   from
     iex.chart c
   left join
@@ -166,7 +169,10 @@ from
       ex_date >= arg_start_date) s
   on
     c.act_symbol = s.act_symbol and
-    c.date < s.date
+    case
+      when forward then c.date >= s.date
+      else c.date < s.date
+    end
   where
     c.act_symbol = arg_act_symbol and
     c.date >= arg_start_date and
