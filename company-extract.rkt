@@ -25,7 +25,9 @@
         (bytes->string/utf-8 _)
         (string->jsexpr _)
         (filter (λ (h) (member (hash-ref h 'type) issue-types)) _)
-        (map (λ (h) (hash-ref h 'symbol)) _))))
+        (map (λ (h) (hash-ref h 'symbol)) _)
+        (filter (λ (s) (if (equal? "" (first-symbol)) #t (string>=? s (first-symbol)))) _)
+        (filter (λ (s) (if (equal? "" (last-symbol)) #t (string<=? s (last-symbol)))) _))))
 
 (define (download-company symbols)
   (make-directory* (string-append "/var/tmp/iex/company/" (~t (today) "yyyy-MM-dd")))
@@ -45,9 +47,19 @@
 
 (define api-token (make-parameter ""))
 
+(define first-symbol (make-parameter ""))
+
+(define last-symbol (make-parameter ""))
+
 (command-line
  #:program "racket company-extract.rkt"
  #:once-each
+ [("-f" "--first-symbol") first
+                          "First symbol to query. Defaults to nothing"
+                          (first-symbol first)]
+ [("-l" "--last-symbol") last
+                         "Last symbol to query. Defaults to nothing"
+                         (last-symbol last)]
  [("-t" "--api-token") token
                      "IEX Cloud API Token"
                      (api-token token)])
