@@ -68,4 +68,4 @@ where
 (system (string-append "cd " (base-folder) "; /usr/local/bin/dolt table import -u --continue split split-" (end-date) ".csv"))
 
 (system (string-append "cd " (base-folder) "; /usr/local/bin/dolt add split; "
-                       "/usr/local/bin/dolt commit -m 'split " (end-date) " update'; /usr/local/bin/dolt push"))
+                       "/usr/local/bin/dolt commit -m 'split " (end-date) " update'; /usr/local/bin/dolt push --silent"))

@@ -82,4 +82,4 @@ order by
                       (start-date)
                       (end-date)))
 (system (string-append "cd " (base-folder) "; /usr/local/bin/dolt add ohlcv; "
-                       "/usr/local/bin/dolt commit -m 'ohlcv " (end-date) " update'; /usr/local/bin/dolt push"))
+                       "/usr/local/bin/dolt commit -m 'ohlcv " (end-date) " update'; /usr/local/bin/dolt push --silent"))
