@@ -111,7 +111,32 @@ insert into iex.company (
   end,
   $11::text::date
 ) on conflict (act_symbol) do update set
-  last_seen = $11::text::date;
+  company_name = $2,
+  exchange = $3,
+  industry = case $4
+    when '' then NULL
+    else $4
+  end,
+  sub_industry = case $5
+    when '' then NULL
+    else $5
+  end,
+  website = case $6
+    when '' then NULL
+    else $6
+  end,
+  description = $7,
+  ceo = case $8
+    when '' then NULL
+    else $8
+  end,
+  issue_type = (select issue_type from it),
+  sector = case $10
+    when '' then NULL
+    else $10
+  end,
+  last_seen = $11::text::date
+;
 "
                                                       (hash-ref (hash-ref company-hash 'company) 'symbol)
                                                       (hash-ref (hash-ref company-hash 'company) 'companyName)
