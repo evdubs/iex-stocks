@@ -69,3 +69,5 @@ where
 
 (system (string-append "cd " (base-folder) "; /usr/local/bin/dolt add split; "
                        "/usr/local/bin/dolt commit -m 'split " (end-date) " update'; /usr/local/bin/dolt push --silent"))
+
+(system (string-append "cd " (base-folder) "; /usr/local/bin/dolt gc"))
