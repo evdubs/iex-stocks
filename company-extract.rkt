@@ -3,6 +3,7 @@
 (require json
          gregor
          net/http-easy
+         net/uri-codec
          racket/cmdline
          racket/file
          racket/list
@@ -38,7 +39,8 @@
                        (λ (error)
                          (displayln (string-append "Encountered error for " (first symbols) "-" (last symbols)))
                          (displayln error))])
-        (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols=" (string-join symbols ",")
+        (~> (string-append "https://cloud.iexapis.com/stable/stock/market/batch?symbols="
+                           (uri-encode (string-join symbols ","))
                            "&types=company&token=" (api-token))
             (get _)
             (response-body _)
