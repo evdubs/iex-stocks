@@ -82,12 +82,14 @@ insert into iex.split (
                                                                 (if (equal? 'null (split-declared-date s)) "" (split-declared-date s))
                                                                 (real->decimal-string (split-to-factor s) 6)
                                                                 (real->decimal-string (split-from-factor s) 6)))
-                                             (map (λ (e) (apply split
-                                                                (list (hash-ref e 'exDate)
-                                                                      (hash-ref e 'declaredDate)
-                                                                      (hash-ref e 'toFactor)
-                                                                      (hash-ref e 'fromFactor))))
-                                                  (hash-ref split-hash 'splits))))))
+                                             (filter (λ (s) (and (not (= 0 (split-to-factor s)))
+                                                                 (not (= 0 (split-from-factor s)))))
+                                                     (map (λ (e) (apply split
+                                                                        (list (hash-ref e 'exDate)
+                                                                              (hash-ref e 'declaredDate)
+                                                                              (hash-ref e 'toFactor)
+                                                                              (hash-ref e 'fromFactor))))
+                                                          (hash-ref split-hash 'splits)))))))
             (commit-transaction dbc)))))))
 
 (disconnect dbc)
